@@ -17,3 +17,11 @@ sealed-secrets-keys.yaml
 build/
 .cache/
 __pycache__/
+
+# Terraform
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.*
+terraform/.terraform.lock.hcl
+terraform/kubeconfig*
+kubeconfig
