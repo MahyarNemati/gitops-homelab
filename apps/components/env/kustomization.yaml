@@ -1,0 +1,26 @@
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+# Rewrites the ENV segment of value file and manifest paths from the
+# overlay's env ConfigMap, so each overlay only declares its name.
+replacements:
+  - source:
+      kind: ConfigMap
+      name: env
+      fieldPath: data.env
+    targets:
+      - select:
+          kind: Application
+          labelSelector: homelab/values=env
+        fieldPaths:
+          - spec.sources.0.helm.valueFiles.1
+        options:
+          delimiter: /
+          index: 2
+      - select:
+          kind: Application
+          labelSelector: homelab/path=env
+        fieldPaths:
+          - spec.source.path
+        options:
+          delimiter: /
+          index: 3

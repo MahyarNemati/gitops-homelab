@@ -1,0 +1,46 @@
+deployment:
+  replicas: 1
+
+ingressClass:
+  enabled: true
+  isDefaultClass: true
+
+providers:
+  kubernetesIngress:
+    publishedService:
+      enabled: true
+  kubernetesCRD:
+    enabled: true
+
+ports:
+  web:
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+          permanent: true
+
+service:
+  type: LoadBalancer
+  spec:
+    externalTrafficPolicy: Local
+
+log:
+  format: json
+
+accessLog:
+  enabled: true
+  format: json
+
+metrics:
+  prometheus:
+    serviceMonitor:
+      enabled: true
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    memory: 256Mi

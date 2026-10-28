@@ -1,0 +1,25 @@
+# Hetzner stack: server private address from terraform/stacks/hetzner.
+kubeEtcd:
+  endpoints: [10.0.1.10]
+kubeControllerManager:
+  endpoints: [10.0.1.10]
+kubeScheduler:
+  endpoints: [10.0.1.10]
+
+grafana:
+  ingress:
+    hosts:
+      - grafana.dev.lab.example.com
+    tls:
+      - secretName: grafana-tls
+        hosts:
+          - grafana.dev.lab.example.com
+
+prometheus:
+  prometheusSpec:
+    retention: 2d
+    retentionSize: 4GB
+    resources:
+      requests:
+        cpu: 100m
+        memory: 512Mi

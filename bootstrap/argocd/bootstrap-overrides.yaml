@@ -1,0 +1,18 @@
+# First install only: the Prometheus Operator CRDs do not exist yet.
+# Once Argo CD manages itself these are re-enabled by values/common/argocd.yaml.
+server:
+  metrics:
+    serviceMonitor:
+      enabled: false
+controller:
+  metrics:
+    serviceMonitor:
+      enabled: false
+repoServer:
+  metrics:
+    serviceMonitor:
+      enabled: false
+applicationSet:
+  metrics:
+    serviceMonitor:
+      enabled: false

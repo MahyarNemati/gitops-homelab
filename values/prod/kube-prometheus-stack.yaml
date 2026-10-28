@@ -1,0 +1,18 @@
+# Proxmox stack: server address from terraform/stacks/proxmox tfvars.
+kubeEtcd:
+  endpoints: [192.168.10.10]
+kubeControllerManager:
+  endpoints: [192.168.10.10]
+kubeScheduler:
+  endpoints: [192.168.10.10]
+
+prometheus:
+  prometheusSpec:
+    retention: 15d
+    retentionSize: 18GB
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          resources:
+            requests:
+              storage: 20Gi
