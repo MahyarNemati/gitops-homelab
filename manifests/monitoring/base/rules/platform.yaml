@@ -1,0 +1,60 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: homelab-platform
+spec:
+  groups:
+    - name: homelab.gitops
+      rules:
+        - alert: ArgoCDAppOutOfSync
+          expr: max by (name, project) (argocd_app_info{sync_status!="Synced"}) == 1
+          for: 30m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Argo CD application {{ $labels.name }} is out of sync"
+            description: "{{ $labels.name }} in project {{ $labels.project }} has not converged for 30 minutes."
+        - alert: ArgoCDAppDegraded
+          expr: max by (name, project) (argocd_app_info{health_status=~"Degraded|Missing"}) == 1
+          for: 10m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Argo CD application {{ $labels.name }} is {{ $labels.health_status }}"
+    - name: homelab.certificates
+      rules:
+        - alert: CertificateExpiringSoon
+          expr: (certmanager_certificate_expiration_timestamp_seconds - time()) < 14 * 24 * 3600
+          for: 1h
+          labels:
+            severity: warning
+          annotations:
+            summary: "Certificate {{ $labels.namespace }}/{{ $labels.name }} expires in under 14 days"
+            description: "cert-manager has not renewed it; check the Certificate and Order resources."
+        - alert: CertificateNotReady
+          expr: max by (namespace, name) (certmanager_certificate_ready_status{condition="False"}) == 1
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Certificate {{ $labels.namespace }}/{{ $labels.name }} is not ready"
+    - name: homelab.secrets
+      rules:
+        - alert: SealedSecretUnsealFailures
+          expr: sum(increase(sealed_secrets_controller_unseal_errors_total[15m])) > 0
+          labels:
+            severity: critical
+          annotations:
+            summary: "Sealed Secrets controller failed to decrypt secrets"
+            description: "Usually means the sealing key was not restored after a rebuild. See docs/disaster-recovery.md."
+    - name: homelab.logging
+      rules:
+        - alert: LokiRequestErrors
+          expr: |
+            sum(rate(loki_request_duration_seconds_count{status_code=~"5.."}[5m]))
+            / sum(rate(loki_request_duration_seconds_count[5m])) > 0.05
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Loki is failing more than 5% of requests"

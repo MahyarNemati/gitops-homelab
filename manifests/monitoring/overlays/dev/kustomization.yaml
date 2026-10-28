@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+# Dev noise should not page anyone.
+patches:
+  - target:
+      kind: PrometheusRule
+      name: demo-slo
+    patch: |
+      - op: replace
+        path: /spec/groups/1/rules/0/labels/severity
+        value: warning

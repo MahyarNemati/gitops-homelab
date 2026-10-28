@@ -1,0 +1,42 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: demo-slo
+spec:
+  groups:
+    - name: demo.recording
+      interval: 30s
+      rules:
+        - record: demo:http_requests:rate5m
+          expr: sum by (status) (rate(http_request_duration_seconds_count{namespace="demo"}[5m]))
+        - record: demo:http_errors:ratio5m
+          expr: |
+            sum(rate(http_request_duration_seconds_count{namespace="demo",status=~"5.."}[5m]))
+            / clamp_min(sum(rate(http_request_duration_seconds_count{namespace="demo"}[5m])), 1e-9)
+        - record: demo:http_latency_p95:5m
+          expr: histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket{namespace="demo"}[5m])))
+    - name: demo.alerts
+      rules:
+        - alert: DemoHighErrorRate
+          expr: demo:http_errors:ratio5m > 0.05
+          for: 10m
+          labels:
+            severity: critical
+          annotations:
+            summary: "podinfo is returning more than 5% errors"
+        - alert: DemoHighLatency
+          expr: demo:http_latency_p95:5m > 0.5
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "podinfo p95 latency above 500ms"
+        - alert: DemoHPAAtMax
+          expr: |
+            kube_horizontalpodautoscaler_status_current_replicas{namespace="demo"}
+            >= kube_horizontalpodautoscaler_spec_max_replicas{namespace="demo"}
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "podinfo HPA pinned at max replicas"
