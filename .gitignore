@@ -1,0 +1,19 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+terraform.tfvars
+*.auto.tfvars
+.terraform.tfrc
+
+# Local cluster access and secrets
+.kube/
+*.key
+sealed-secrets-keys.yaml
+
+# Rendered output and caches
+build/
+.cache/
+__pycache__/
