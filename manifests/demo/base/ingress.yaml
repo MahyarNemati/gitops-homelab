@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: podinfo
+  annotations:
+    cert-manager.io/cluster-issuer: default
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - demo.lab.example.com
+      secretName: podinfo-tls
+  rules:
+    - host: demo.lab.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: podinfo
+                port:
+                  name: http
