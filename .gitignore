@@ -25,3 +25,6 @@ terraform/*.tfstate.*
 terraform/.terraform.lock.hcl
 terraform/kubeconfig*
 kubeconfig
+
+# macOS Finder artefact.
+.DS_Store
