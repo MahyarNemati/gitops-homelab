@@ -1,0 +1,24 @@
+version: 2
+
+# Without this, nothing keeps the dependencies current and the advisory badge
+# on the repository page accumulates quietly -- which is what happened here
+# before it was added. The patch bumps are grouped into one pull request so
+# the noise stays low and the interesting ones still arrive on their own.
+
+updates:
+  # The provider and module versions under terraform/. OpenTofu reads the same
+  # files, and this is the repository's whole subject matter -- a stale
+  # provider pin here is the thing most likely to break a rebuild.
+  - package-ecosystem: terraform
+    directory: /terraform
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      patch:
+        update-types: [patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
