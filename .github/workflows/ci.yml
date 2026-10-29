@@ -18,7 +18,7 @@ jobs:
     name: yaml lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - run: pipx install yamllint
       - run: yamllint --strict .
 
@@ -38,7 +38,7 @@ jobs:
           - manifests/cluster-issuers/overlays/dev
           - manifests/cluster-issuers/overlays/prod
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: imranismail/setup-kustomize@v2
       # A kustomization that does not build is a cluster that will not sync, and
       # Argo CD would be the thing to discover it. Catch it here instead.
@@ -49,7 +49,7 @@ jobs:
     name: manifests validate against kubernetes schemas
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: imranismail/setup-kustomize@v2
       - name: Install kubeconform
         run: |
@@ -82,14 +82,14 @@ jobs:
     name: grafana dashboards are valid json
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - run: python3 scripts/check-dashboards.py
 
   promtool:
     name: prometheus rules check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - run: pip install --quiet pyyaml
       - name: Install promtool
         run: |
@@ -103,7 +103,7 @@ jobs:
     name: opentofu fmt and validate
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: opentofu/setup-opentofu@v1
         with:
           tofu_version: 1.13.2
